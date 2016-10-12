@@ -130,6 +130,7 @@
     </Compile>
     <Compile Include="Models\Booking.cs" />
     <Compile Include="Context\BookingFlightContext.cs" />
+    <Compile Include="Controllers\BookingsController.cs" />
     <Compile Include="Models\Flight.cs" />
     <Compile Include="Models\FlightDetail.cs" />
     <Compile Include="Models\Hang.cs" />
