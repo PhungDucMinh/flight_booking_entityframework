@@ -11,7 +11,7 @@ using System.Web.Http.Description;
 using BookingFlight.Context;
 using BookingFlight.Models;
 
-namespace BookingFlight.Bookings
+namespace BookingFlight.Controllers
 {
     public class BookingsController : ApiController
     {
