@@ -7,59 +7,50 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
-using System.Web.Http.ModelBinding;
-using System.Web.Http.OData;
-using System.Web.Http.OData.Routing;
+using System.Web.Http.Description;
 using BookingFlight.Context;
 using BookingFlight.Models;
 
 namespace BookingFlight.Controllers
 {
-    /*
-    The WebApiConfig class may require additional changes to add a route for this controller. Merge these statements into the Register method of the WebApiConfig class as applicable. Note that OData URLs are case sensitive.
-
-    using System.Web.Http.OData.Builder;
-    using System.Web.Http.OData.Extensions;
-    using BookingFlight.Models;
-    ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
-    builder.EntitySet<FlightDetail>("FlightDetails");
-    config.Routes.MapODataServiceRoute("odata", "odata", builder.GetEdmModel());
-    */
-    public class FlightDetailsController : ODataController
+    public class FlightDetailsController : ApiController
     {
         private BookingFlightContext db = new BookingFlightContext();
 
-        // GET: odata/FlightDetails
-        [EnableQuery]
+        // GET: api/FlightDetails
         public IQueryable<FlightDetail> GetFlightDetails()
         {
             return db.FlightDetails;
         }
 
-        // GET: odata/FlightDetails(5)
-        [EnableQuery]
-        public SingleResult<FlightDetail> GetFlightDetail([FromODataUri] int key)
+        // GET: api/FlightDetails/5
+        [ResponseType(typeof(FlightDetail))]
+        public IHttpActionResult GetFlightDetail(int id)
         {
-            return SingleResult.Create(db.FlightDetails.Where(flightDetail => flightDetail.Id == key));
-        }
-
-        // PUT: odata/FlightDetails(5)
-        public IHttpActionResult Put([FromODataUri] int key, Delta<FlightDetail> patch)
-        {
-            Validate(patch.GetEntity());
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            FlightDetail flightDetail = db.FlightDetails.Find(key);
+            FlightDetail flightDetail = db.FlightDetails.Find(id);
             if (flightDetail == null)
             {
                 return NotFound();
             }
 
-            patch.Put(flightDetail);
+            return Ok(flightDetail);
+        }
+
+        // PUT: api/FlightDetails/5
+        [ResponseType(typeof(void))]
+        public IHttpActionResult PutFlightDetail(int id, FlightDetail flightDetail)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (id != flightDetail.Id)
+            {
+                return BadRequest();
+            }
+
+            db.Entry(flightDetail).State = EntityState.Modified;
 
             try
             {
@@ -67,7 +58,7 @@ namespace BookingFlight.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!FlightDetailExists(key))
+                if (!FlightDetailExists(id))
                 {
                     return NotFound();
                 }
@@ -77,11 +68,12 @@ namespace BookingFlight.Controllers
                 }
             }
 
-            return Updated(flightDetail);
+            return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: odata/FlightDetails
-        public IHttpActionResult Post(FlightDetail flightDetail)
+        // POST: api/FlightDetails
+        [ResponseType(typeof(FlightDetail))]
+        public IHttpActionResult PostFlightDetail(FlightDetail flightDetail)
         {
             if (!ModelState.IsValid)
             {
@@ -91,51 +83,14 @@ namespace BookingFlight.Controllers
             db.FlightDetails.Add(flightDetail);
             db.SaveChanges();
 
-            return Created(flightDetail);
+            return CreatedAtRoute("DefaultApi", new { id = flightDetail.Id }, flightDetail);
         }
 
-        // PATCH: odata/FlightDetails(5)
-        [AcceptVerbs("PATCH", "MERGE")]
-        public IHttpActionResult Patch([FromODataUri] int key, Delta<FlightDetail> patch)
+        // DELETE: api/FlightDetails/5
+        [ResponseType(typeof(FlightDetail))]
+        public IHttpActionResult DeleteFlightDetail(int id)
         {
-            Validate(patch.GetEntity());
-
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            FlightDetail flightDetail = db.FlightDetails.Find(key);
-            if (flightDetail == null)
-            {
-                return NotFound();
-            }
-
-            patch.Patch(flightDetail);
-
-            try
-            {
-                db.SaveChanges();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FlightDetailExists(key))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return Updated(flightDetail);
-        }
-
-        // DELETE: odata/FlightDetails(5)
-        public IHttpActionResult Delete([FromODataUri] int key)
-        {
-            FlightDetail flightDetail = db.FlightDetails.Find(key);
+            FlightDetail flightDetail = db.FlightDetails.Find(id);
             if (flightDetail == null)
             {
                 return NotFound();
@@ -144,7 +99,7 @@ namespace BookingFlight.Controllers
             db.FlightDetails.Remove(flightDetail);
             db.SaveChanges();
 
-            return StatusCode(HttpStatusCode.NoContent);
+            return Ok(flightDetail);
         }
 
         protected override void Dispose(bool disposing)
@@ -156,9 +111,9 @@ namespace BookingFlight.Controllers
             base.Dispose(disposing);
         }
 
-        private bool FlightDetailExists(int key)
+        private bool FlightDetailExists(int id)
         {
-            return db.FlightDetails.Count(e => e.Id == key) > 0;
+            return db.FlightDetails.Count(e => e.Id == id) > 0;
         }
     }
 }
