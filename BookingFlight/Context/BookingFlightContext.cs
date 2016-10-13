@@ -17,7 +17,7 @@ namespace BookingFlight.Context
 
         public DbSet<Booking> Bookings { get; set; }
 
-        public DbSet<Passenger> HangKhachs { get; set; }
+        public DbSet<Passenger> Passengers { get; set; }
 
         #endregion
 
@@ -36,7 +36,7 @@ namespace BookingFlight.Context
         {
             // --- Flight ---
             modelBuilder.Entity<Flight>().ToTable("Flight");
-            modelBuilder.Entity<Flight>().HasKey(p => new { p.Ma, p.Ngay ,p.Hang, p.MucGia });
+            modelBuilder.Entity<Flight>().HasKey(p => new { p.Ma, p.Ngay, p.Hang, p.MucGia });
             modelBuilder.Entity<Flight>().HasMany(p => p.Bookings).WithMany(p => p.Flights).Map(m =>
             {
                 m.ToTable("FlightDetail");
@@ -50,7 +50,10 @@ namespace BookingFlight.Context
 
             // --- HangKhach ---
             modelBuilder.Entity<Passenger>().ToTable("Passenger");
-            modelBuilder.Entity<Passenger>().HasKey(p => p.MaDatCho);
+            modelBuilder.Entity<Passenger>().HasKey(p => p.Id);
+            modelBuilder.Entity<Passenger>().HasRequired(p => p.Booking)
+                .WithMany(p => p.Passengers)
+                .HasForeignKey(p => p.MaDatCho);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -70,16 +73,9 @@ namespace BookingFlight.Context
 
         IList<Flight> GetSeedFlight(BookingFlightContext context)
         {
+            Booking booking = GetSeedBooking();
+
             IList<Flight> flights = new List<Flight>();
-
-            Booking booking = new Booking
-            {
-                Ma = "ABCXYZ",
-                ThoiGianDatCho = DateTime.Now,
-                TongTien = 10000,
-                TrangThai = false
-            };
-
             // Just demonstrate, use another solution on datetime
             flights.Add(new Flight
             {
@@ -90,7 +86,7 @@ namespace BookingFlight.Context
                 Gio = DateTime.Now,
                 Hang = Hang.Y,
                 MucGia = MucGia.E,
-                Bookings = new List<Booking> { booking}
+                Bookings = new List<Booking> { booking }
             });
 
             flights.Add(new Flight
@@ -124,10 +120,38 @@ namespace BookingFlight.Context
                 Gio = DateTime.Now,
                 Hang = Hang.Y,
                 MucGia = MucGia.E,
-                Bookings = new List<Booking> { booking}
+                Bookings = new List<Booking> { booking }
             });
 
             return flights;
+        }
+
+        Booking GetSeedBooking()
+        {
+            Passenger passenger1 = new Passenger
+            {
+                Ten = "VAN A",
+                Ho = "NGUYEN",
+                DanhXung = "MR"
+            };
+
+            Passenger passenger2 = new Passenger
+            {
+                Ten = "THI B",
+                Ho = "TRAN",
+                DanhXung = "MS"
+            };
+
+            Booking booking = new Booking
+            {
+                Ma = "ABCXYZ",
+                ThoiGianDatCho = DateTime.Now,
+                TongTien = 10000,
+                TrangThai = false,
+                Passengers = new List<Passenger> { passenger1, passenger2 }
+            };
+
+            return booking;
         }
     }
 }

@@ -17,5 +17,6 @@ namespace BookingFlight.Models
 
         public IList<Flight> Flights { get; set; }
 
+        public IList<Passenger> Passengers { get; set; }
     }
 }
