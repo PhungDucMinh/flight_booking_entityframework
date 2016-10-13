@@ -8,9 +8,7 @@ namespace BookingFlight.Models
 {
     public class Flight
     {
-        public int Id { get; set; }
-
-        public string MA { get; set; }
+        public string Ma { get; set; }
 
         public string NoiDi { get; set; }
 
@@ -22,10 +20,12 @@ namespace BookingFlight.Models
 
         public Hang Hang { get; set; }
 
-        public string MucGia { get; set; }
+        public MucGia MucGia { get; set; }
 
         public int SoLuongGhe { get; set; }
 
         public int GiaBan { get; set; }
+
+        public IList<Booking> Bookings { get; set; }
     }
 }

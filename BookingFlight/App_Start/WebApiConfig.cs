@@ -18,6 +18,11 @@ namespace BookingFlight
                 name: "DefaultApi",
                 routeTemplate: "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
+                //defaults: new
+                //{
+                //    controller = "Flight",
+                //    action = "Get"
+                //}
             );
         }
     }

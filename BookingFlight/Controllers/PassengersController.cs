@@ -13,21 +13,21 @@ using BookingFlight.Models;
 
 namespace BookingFlight.Controllers
 {
-    public class HangKhachsController : ApiController
+    public class PassengersController : ApiController
     {
         private BookingFlightContext db = new BookingFlightContext();
 
-        // GET: api/HangKhachs
-        public IQueryable<HangKhach> GetHangKhachs()
+        // GET: api/HangKhaches
+        public IQueryable<Passenger> GetHangKhachs()
         {
             return db.HangKhachs;
         }
 
-        // GET: api/HangKhachs/5
-        [ResponseType(typeof(HangKhach))]
-        public IHttpActionResult GetHangKhach(int id)
+        // GET: api/HangKhaches/5
+        [ResponseType(typeof(Passenger))]
+        public IHttpActionResult GetHangKhach(string id)
         {
-            HangKhach hangKhach = db.HangKhachs.Find(id);
+            Passenger hangKhach = db.HangKhachs.Find(id);
             if (hangKhach == null)
             {
                 return NotFound();
@@ -36,16 +36,16 @@ namespace BookingFlight.Controllers
             return Ok(hangKhach);
         }
 
-        // PUT: api/HangKhachs/5
+        // PUT: api/HangKhaches/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutHangKhach(int id, HangKhach hangKhach)
+        public IHttpActionResult PutHangKhach(string id, Passenger hangKhach)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != hangKhach.Id)
+            if (id != hangKhach.MaDatCho)
             {
                 return BadRequest();
             }
@@ -71,9 +71,9 @@ namespace BookingFlight.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // POST: api/HangKhachs
-        [ResponseType(typeof(HangKhach))]
-        public IHttpActionResult PostHangKhach(HangKhach hangKhach)
+        // POST: api/HangKhaches
+        [ResponseType(typeof(Passenger))]
+        public IHttpActionResult PostHangKhach(Passenger hangKhach)
         {
             if (!ModelState.IsValid)
             {
@@ -81,16 +81,31 @@ namespace BookingFlight.Controllers
             }
 
             db.HangKhachs.Add(hangKhach);
-            db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = hangKhach.Id }, hangKhach);
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                if (HangKhachExists(hangKhach.MaDatCho))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtRoute("DefaultApi", new { id = hangKhach.MaDatCho }, hangKhach);
         }
 
-        // DELETE: api/HangKhachs/5
-        [ResponseType(typeof(HangKhach))]
-        public IHttpActionResult DeleteHangKhach(int id)
+        // DELETE: api/HangKhaches/5
+        [ResponseType(typeof(Passenger))]
+        public IHttpActionResult DeleteHangKhach(string id)
         {
-            HangKhach hangKhach = db.HangKhachs.Find(id);
+            Passenger hangKhach = db.HangKhachs.Find(id);
             if (hangKhach == null)
             {
                 return NotFound();
@@ -111,9 +126,9 @@ namespace BookingFlight.Controllers
             base.Dispose(disposing);
         }
 
-        private bool HangKhachExists(int id)
+        private bool HangKhachExists(string id)
         {
-            return db.HangKhachs.Count(e => e.Id == id) > 0;
+            return db.HangKhachs.Count(e => e.MaDatCho == id) > 0;
         }
     }
 }

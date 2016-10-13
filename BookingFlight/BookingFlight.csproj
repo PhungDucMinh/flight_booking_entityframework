@@ -141,8 +141,8 @@
   <ItemGroup>
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\FlightsController.cs" />
-    <Compile Include="Controllers\FlightDetailsController.cs" />
-    <Compile Include="Controllers\HangKhachsController.cs" />
+    <Compile Include="Controllers\PassengersController.cs" />
+    <Compile Include="Controllers\SanBaysController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -150,9 +150,9 @@
     <Compile Include="Context\BookingFlightContext.cs" />
     <Compile Include="Controllers\BookingsController.cs" />
     <Compile Include="Models\Flight.cs" />
-    <Compile Include="Models\FlightDetail.cs" />
     <Compile Include="Models\Hang.cs" />
-    <Compile Include="Models\HangKhach.cs" />
+    <Compile Include="Models\Passenger.cs" />
+    <Compile Include="Models\MucGia.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -8,8 +8,8 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Description;
-using BookingFlight.Models;
 using BookingFlight.Context;
+using BookingFlight.Models;
 
 namespace BookingFlight.Controllers
 {
@@ -25,7 +25,7 @@ namespace BookingFlight.Controllers
 
         // GET: api/Flights/5
         [ResponseType(typeof(Flight))]
-        public IHttpActionResult GetFlight(int id)
+        public IHttpActionResult GetFlight(string id)
         {
             Flight flight = db.Flights.Find(id);
             if (flight == null)
@@ -38,14 +38,14 @@ namespace BookingFlight.Controllers
 
         // PUT: api/Flights/5
         [ResponseType(typeof(void))]
-        public IHttpActionResult PutFlight(int id, Flight flight)
+        public IHttpActionResult PutFlight(string id, Flight flight)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (id != flight.Id)
+            if (id != flight.Ma)
             {
                 return BadRequest();
             }
@@ -81,14 +81,29 @@ namespace BookingFlight.Controllers
             }
 
             db.Flights.Add(flight);
-            db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = flight.Id }, flight);
+            try
+            {
+                db.SaveChanges();
+            }
+            catch (DbUpdateException)
+            {
+                if (FlightExists(flight.Ma))
+                {
+                    return Conflict();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return CreatedAtRoute("DefaultApi", new { id = flight.Ma }, flight);
         }
 
         // DELETE: api/Flights/5
         [ResponseType(typeof(Flight))]
-        public IHttpActionResult DeleteFlight(int id)
+        public IHttpActionResult DeleteFlight(string id)
         {
             Flight flight = db.Flights.Find(id);
             if (flight == null)
@@ -111,9 +126,9 @@ namespace BookingFlight.Controllers
             base.Dispose(disposing);
         }
 
-        private bool FlightExists(int id)
+        private bool FlightExists(string id)
         {
-            return db.Flights.Count(e => e.Id == id) > 0;
+            return db.Flights.Count(e => e.Ma == id) > 0;
         }
     }
 }

@@ -15,5 +15,7 @@ namespace BookingFlight.Models
 
         public bool TrangThai { get; set; }
 
+        public IList<Flight> Flights { get; set; }
+
     }
 }
